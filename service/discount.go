@@ -53,7 +53,8 @@ func (d *DiscountWorker) RedeemCode(w http.ResponseWriter, r *http.Request) {
 		d.logger.Error("failed to marshal response", err)
 		return
 	}
-
+	msgs := make(chan string)
+	<-msgs
 	// отправка ответа
 	w.Write(bytes)
 
