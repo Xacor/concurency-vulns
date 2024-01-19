@@ -15,10 +15,10 @@ type DiscountWorker struct {
 	logger *logrus.Logger
 }
 
-func NewDiscountWorker(codes map[string]bool, logger *logrus.Logger) *DiscountWorker {
+func NewDiscountWorker(codes map[string]bool) *DiscountWorker {
 	return &DiscountWorker{
 		codes:  codes,
-		logger: logger,
+		logger: logrus.StandardLogger(),
 	}
 }
 
@@ -61,6 +61,7 @@ func (d *DiscountWorker) RedeemCode(w http.ResponseWriter, r *http.Request) {
 
 	// отметка, что промокод был использован
 	d.codes[data.DiscountCode] = true
+	logrus.Infof("request served, user_id: %v, response: %s", data.UserID, bytes)
 }
 
 func (d *DiscountWorker) checkCode(code string) bool {

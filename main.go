@@ -10,18 +10,22 @@ import (
 )
 
 func main() {
-	l := logrus.New()
+	customFormatter := new(logrus.TextFormatter)
+	customFormatter.TimestampFormat = "2006-01-02 15:04:05"
+	logrus.SetFormatter(customFormatter)
+	customFormatter.FullTimestamp = true
 
 	discountCodes := generateCodes()
-	l.Infof("codes: %+v", discountCodes)
+	logrus.Infof("codes: %v", discountCodes)
 
-	discountWorker := service.NewDiscountWorker(discountCodes, l)
-	l.Info("listening on :8080")
+	discountWorker := service.NewDiscountWorker(discountCodes)
+
 	http.HandleFunc(`/api/redeem-code`, discountWorker.RedeemCode)
 
+	logrus.Info("listening on :8080")
 	err := http.ListenAndServe(`:8080`, nil)
 	if err != nil {
-		l.Panic(err)
+		logrus.Panic(err)
 	}
 }
 
@@ -42,5 +46,4 @@ func randomString() string {
 		b[i] = charset[seededRand.Intn(len(charset))]
 	}
 	return string(b)
-
 }
